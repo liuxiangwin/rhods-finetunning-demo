@@ -8,7 +8,9 @@ import transformers
 from peft import PeftModel
 
 #get your HF token :)
-token = "xxxxxxxxxxxxxxxxxxxxxxxx"
+#token = "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" #Neo-Xu Token
+#token = "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"
+token = "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"
 HfFolder.save_token(token)
 
 model_id = "meta-llama/Llama-2-7b-chat-hf" ## "Trelis/Llama-2-7b-chat-hf-sharded-bf16" is an alternative if you don't have access via Meta on HuggingFace
@@ -22,9 +24,6 @@ bnb_config = BitsAndBytesConfig(
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0})
-
-
-
 model.gradient_checkpointing_enable()
 model = prepare_model_for_kbit_training(model)
 
@@ -85,8 +84,17 @@ trainer.train()
 base_model_name = model_id.split("/")[-1]
 
 # Define the save and push paths
-adapter_model = f"avijra/{base_model_name}-fine-tuned-adapters"  #adjust 'avijra' to your HuggingFace organisation
-new_model = f"avijra/{base_model_name}-fine-tuned" #adjust 'avijra' to your HuggingFace organisation
+
+#redhat-model-finetuing/Mistral-7B-fine-tuned-adapters 
+#adjust 'avijra' to your HuggingFace organisation
+#adapter_model = f"redhat-model-finetuing/Mistral-7B-fine-tuned-adapters"
+
+adapter_model =f"redhat-model-finetuing/Llama-2-7b-chat-hf-tuned-adapters"
+
+#adjust 'avijra' to your HuggingFace organisation
+#new_model = f"redhat-model-finetuing/Mistral-7B-fine-tuned" 
+new_model = f"redhat-model-finetuing/Llama-2-7b-chat-hf-fine-tuned" 
+
 
 # Save the model
 model.save_pretrained(adapter_model, push_to_hub=True, use_auth_token=True)
